@@ -17,6 +17,14 @@ func main(){
 
 //https://medium.com/@masnun/making-http-requests-in-golang-dd123379efe7
 
+func execAQL(aql string) (int, []interface{}) {
+	res := netutils.SendAQL ( aql)
+	s := fmt.Sprintf("%d", len(res))
+	log.Println ("Number of results: " + s)
+	
+	return  len(res), res
+}
+
 func getNbOlderThan(day int) (int, []interface{}) {
 	aql := fmt.Sprintf(`items.find( 
 			{
@@ -24,12 +32,7 @@ func getNbOlderThan(day int) (int, []interface{}) {
 				"modified" : {"$before" : "%dd"}
 			})`,day)
 
-	res := netutils.SendAQL ( aql)
-	s := fmt.Sprintf("%d", len(res))
-
-	log.Println ("getNbOlderThan: " + s)
-	
-	return  len(res), res
+	return execAQL(aql)
 }
 
 
