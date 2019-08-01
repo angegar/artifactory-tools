@@ -5,6 +5,9 @@ import (
 	"artifactorytools/netutils"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
+
 )
 
 func main(){
@@ -12,7 +15,9 @@ func main(){
 	netutils.Login = ""
 	netutils.Password = ""
 	netutils.URL = ""
-	getNbOlderThan(600)
+	i := getNbArtifact()
+	log.Println(i)
+	//getNbOlderThan(600)
 }
 
 //https://medium.com/@masnun/making-http-requests-in-golang-dd123379efe7
@@ -35,5 +40,18 @@ func getNbOlderThan(day int) (int, []interface{}) {
 	return execAQL(aql)
 }
 
+func getNbArtifact() int {
+	data := netutils.GetRestAPI("/artifactory/api/storageinfo")
+	log.Println(data)
+	c := data["binariesSummary"].(map[string]interface{})
+	var tmp = c["artifactsCount"].(string)
+	tmp = strings.Replace(tmp, ",", "", -1)
+	res,err := strconv.Atoi(tmp)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println ("getNbArtifact :" + tmp)
+	return res
+}
 
 
